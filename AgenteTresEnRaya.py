@@ -148,15 +148,20 @@ class AgenteTresEnRaya(AgenteJugador):
                 elif ficha == 'O':
                     conteo_o += 1
             
+            # La IA debe ser más agresiva creando sus líneas que bloqueando líneas menores
+            # Si el agente es X, sus puntos aumentan. Si es O, disminuyen.
+            agresividad_x = 1.5 if self.jugador_id == 'X' else 1.0
+            agresividad_o = 1.5 if self.jugador_id == 'O' else 1.0
+            
             # Valorar las líneas
             if conteo_x > 0 and conteo_o == 0:
-                if conteo_x == 1: puntaje += pesos['linea_1']
-                elif conteo_x == 2: puntaje += pesos['linea_2']
-                elif conteo_x == 3: puntaje += pesos['linea_3']
+                if conteo_x == 1: puntaje += pesos['linea_1'] * agresividad_x
+                elif conteo_x == 2: puntaje += pesos['linea_2'] * agresividad_x
+                elif conteo_x == 3: puntaje += pesos['linea_3'] * agresividad_x
             elif conteo_o > 0 and conteo_x == 0:
-                if conteo_o == 1: puntaje -= pesos['linea_1']
-                elif conteo_o == 2: puntaje -= pesos['linea_2']
-                elif conteo_o == 3: puntaje -= pesos['linea_3']
+                if conteo_o == 1: puntaje -= pesos['linea_1'] * agresividad_o
+                elif conteo_o == 2: puntaje -= pesos['linea_2'] * agresividad_o
+                elif conteo_o == 3: puntaje -= pesos['linea_3'] * agresividad_o
 
         # Evaluar posiciones estratégicas con tabla hash pre-calculada
         for pos, ficha in tablero.items():
