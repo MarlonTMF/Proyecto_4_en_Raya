@@ -1,4 +1,5 @@
 from Simulador import Simulador
+from AgenteAleatorio import AgenteAleatorio
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -6,44 +7,38 @@ from AgenteTresEnRaya import AgenteTresEnRaya
 
 class Fitness:
     @staticmethod
-    def calcular(individuo, episodios=2):
+    def calcular(individuo, episodios=6):
         """
-        Evalúa el fitness del individuo haciéndolo jugar contra un oponente estático.
+        Evalúa el fitness del individuo haciéndolo jugar contra un agente ALEATORIO.
+        
+        Esto genera VARIANZA real: los individuos con buenos pesos ganan,
+        los malos pierden. Sin varianza, el algoritmo genético no evoluciona.
+        
+        Episodios: 4 partidas (2 como X, 2 como O) para reducir ruido estadístico.
         """
         puntaje_total = 0
-        
-        # Pesos base por defecto para el oponente
-        pesos_base = {
-            'linea_1': 5, 'linea_2': 50, 'linea_3': 500,
-            'centro': 30, 'esquina': 25, 'cara': 10, 'arista': 5
-        }
-        
+
         for i in range(episodios):
-            # Mitad partidas empieza X, mitad empieza O
             if i % 2 == 0:
-                # Individuo es X
-                agente_x = AgenteTresEnRaya(n=4, altura=1, jugador='X', pesos_heuristica=individuo.pesos)
-                agente_o = AgenteTresEnRaya(n=4, altura=1, jugador='O', pesos_heuristica=pesos_base)
+                # Individuo juega como X contra aleatorio O
+                agente_x = AgenteTresEnRaya(n=4, altura=2, jugador='X', pesos_heuristica=individuo.pesos)
+                agente_o = AgenteAleatorio(jugador='O')
                 resultado, turnos = Simulador.jugar(agente_x, agente_o)
                 ganador_esperado = 'X'
-                perdedor_esperado = 'O'
             else:
-                # Individuo es O
-                agente_x = AgenteTresEnRaya(n=4, altura=1, jugador='X', pesos_heuristica=pesos_base)
-                agente_o = AgenteTresEnRaya(n=4, altura=1, jugador='O', pesos_heuristica=individuo.pesos)
+                # Individuo juega como O contra aleatorio X
+                agente_x = AgenteAleatorio(jugador='X')
+                agente_o = AgenteTresEnRaya(n=4, altura=2, jugador='O', pesos_heuristica=individuo.pesos)
                 resultado, turnos = Simulador.jugar(agente_x, agente_o)
                 ganador_esperado = 'O'
-                perdedor_esperado = 'X'
-                
+
             if resultado == ganador_esperado:
-                puntaje_total += 3
-                # Bonus por ganar rápido
-                puntaje_total += (64 - turnos) * 0.1
+                puntaje_total += 3                      # Victoria: 3 puntos
+                puntaje_total += (64 - turnos) * 0.05  # Bonus por ganar rápido
             elif resultado == 'Empate':
-                puntaje_total += 1
-            else:
-                # Perdió
-                puntaje_total += 0
-                
+                puntaje_total += 1                      # Empate: 1 punto (malo contra aleatorio)
+            # Derrota: 0 puntos
+
         individuo.fitness = puntaje_total
         return puntaje_total
+

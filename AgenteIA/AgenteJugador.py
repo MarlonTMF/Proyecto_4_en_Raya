@@ -202,9 +202,9 @@ class AgenteJugador(Agente):
             
     def mide_tiempo(funcion):
         def funcion_medida(*args, **kwards):
-            inicio = time.time()
+            # inicio = time.time()
             c = funcion(*args, **kwards)
-            print("Tiempo de ejecucion: ", time.time() - inicio)
+            # print("Tiempo de ejecucion: ", time.time() - inicio) # <-- REMOVIDO para no spamear entrenamiento
             return c
 
         return funcion_medida

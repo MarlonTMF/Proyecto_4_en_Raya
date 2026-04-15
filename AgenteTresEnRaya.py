@@ -12,17 +12,24 @@ class AgenteTresEnRaya(AgenteJugador):
         self.k = 4  # Jugamos a 4 en raya
         self._ventanas = self._generar_ventanas()
         self.jugador_id = jugador
+        self.tecnica = "fun_eval"
         
         # Pesos por defecto si no son provistos por el Algoritmo Genético
         if pesos_heuristica is None:
+            # --- PESOS MANUALES ORIGINALES (antes del AG) ---
+            # 'linea_1': 5, 'linea_2': 50, 'linea_3': 500,
+            # 'centro': 30, 'esquina': 25, 'cara': 10, 'arista': 5
+            # -------------------------------------------------
+            # PESOS EVOLUCIONADOS por Algoritmo Genético (Ronda 2 — Fitness: 33.25)
+            # Descubrimientos clave: cara (+920%), centro (+210%), linea_2 (-74%)
             self.pesos = {
-                'linea_1': 5,
-                'linea_2': 50,
-                'linea_3': 500,
-                'centro': 30,
-                'esquina': 25,
-                'cara': 10,
-                'arista': 5
+                'linea_1': 9,
+                'linea_2': 13,
+                'linea_3': 389,
+                'centro':  93,
+                'esquina': 15,
+                'cara':    102,
+                'arista':  7
             }
         else:
             self.pesos = pesos_heuristica
